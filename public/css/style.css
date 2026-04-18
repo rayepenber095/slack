@@ -1,0 +1,236 @@
+/* Slack Clone - Minimal UI Styles */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #1a1d21;
+    color: #d1d2d3;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 260px;
+    background: #19171d;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+}
+
+.sidebar-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid #522653;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.workspace-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.channel-list {
+    padding: 8px 0;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.channel-item {
+    padding: 6px 20px;
+    cursor: pointer;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    color: #d1d2d3;
+}
+
+.channel-item:hover,
+.channel-item.active {
+    background: #1164a3;
+    color: #fff;
+}
+
+.channel-item::before {
+    content: '# ';
+    opacity: 0.7;
+}
+
+/* Main chat area */
+.main {
+    margin-left: 260px;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.chat-header {
+    padding: 12px 20px;
+    border-bottom: 1px solid #2c2d30;
+    background: #1a1d21;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.messages-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.message {
+    display: flex;
+    margin-bottom: 16px;
+    align-items: flex-start;
+}
+
+.message-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 4px;
+    background: #1164a3;
+    margin-right: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.message-content .username {
+    font-weight: 700;
+    color: #fff;
+    margin-right: 8px;
+}
+
+.message-content .timestamp {
+    font-size: 12px;
+    color: #717274;
+}
+
+.message-content .text {
+    margin-top: 4px;
+    line-height: 1.5;
+}
+
+/* Input area */
+.input-area {
+    padding: 16px 20px;
+    border-top: 1px solid #2c2d30;
+}
+
+.message-input-wrapper {
+    border: 1px solid #565856;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    background: #222529;
+    padding: 8px 12px;
+}
+
+.message-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #d1d2d3;
+    font-size: 15px;
+    resize: none;
+}
+
+.send-btn {
+    background: #007a5a;
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.send-btn:hover {
+    background: #148567;
+}
+
+/* Login page */
+.login-container {
+    max-width: 400px;
+    margin: 100px auto;
+    padding: 40px;
+    background: #222529;
+    border-radius: 8px;
+}
+
+.login-container h1 {
+    color: #fff;
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 14px;
+    color: #d1d2d3;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px 12px;
+    background: #1a1d21;
+    border: 1px solid #565856;
+    border-radius: 4px;
+    color: #d1d2d3;
+    font-size: 15px;
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 12px;
+    background: #007a5a;
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.btn-primary:hover {
+    background: #148567;
+}
+
+.error-message {
+    color: #e8912d;
+    font-size: 14px;
+    margin-top: 8px;
+}
+
+/* File upload */
+.upload-btn {
+    background: transparent;
+    border: none;
+    color: #717274;
+    cursor: pointer;
+    padding: 4px 8px;
+    font-size: 18px;
+}
+
+.upload-btn:hover {
+    color: #d1d2d3;
+}

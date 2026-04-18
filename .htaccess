@@ -1,0 +1,26 @@
+# VULN: Directory listing enabled for /uploads
+# VULN: PHP execution not disabled in uploads directory
+# VULN: No access restrictions on /logs
+
+Options +Indexes
+
+# VULN: Should have Options -Indexes to disable directory listing
+# VULN: Should have php_flag engine off in /public/uploads
+
+RewriteEngine On
+
+# Route all requests through index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [QSA,L]
+
+# VULN: No restriction on accessing /logs directory
+# VULN: No restriction on accessing /config directory
+# VULN: /api/internal not protected
+
+# VULN: Missing security headers (should be set here or in nginx config):
+# Header always set X-Frame-Options SAMEORIGIN
+# Header always set X-Content-Type-Options nosniff
+# Header always set X-XSS-Protection "1; mode=block"
+# Header always set Content-Security-Policy "default-src 'self'"
+# Header always set Strict-Transport-Security "max-age=31536000"

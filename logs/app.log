@@ -1,0 +1,3 @@
+# Slack Clone Application Log
+# VULN: World-readable log file under web root
+# VULN: Contains user activity, IP addresses, tokens
