@@ -1,0 +1,4 @@
+# Slack Clone WebSocket Log
+# VULN: Contains full WebSocket message payloads
+# VULN: Auth tokens logged in plaintext
+# VULN: World-readable
