@@ -5,6 +5,7 @@ header('Access-Control-Allow-Origin: *');
 require_once __DIR__ . '/../../../includes/session.php';
 require_once __DIR__ . '/../../../includes/auth.php';
 require_once __DIR__ . '/../../../includes/file_handler.php';
+require_once __DIR__ . '/../../../includes/message_handler.php';
 require_once __DIR__ . '/../../../includes/logger.php';
 
 requireLogin();
@@ -21,8 +22,9 @@ if (empty($_FILES['file'])) {
     exit;
 }
 
-$userId = $_SESSION['user_id'];
-$file   = $_FILES['file'];
+$userId    = $_SESSION['user_id'];
+$file      = $_FILES['file'];
+$channelId = $_POST['channel_id'] ?? '';
 
 // VULN: No CSRF token check
 // VULN: handleFileUpload() trusts extension, not magic bytes
@@ -32,6 +34,14 @@ $result = handleFileUpload($file, $userId);
 
 if ($result['success']) {
     logInfo("File uploaded: {$result['file_name']} by $userId");
+
+    // If a channel was specified, send a message in that channel referencing the file
+    if (!empty($channelId)) {
+        $content   = "[file:" . $result['file_id'] . ":" . $result['file_path'] . ":" . $result['file_name'] . "]";
+        $messageId = sendMessage($channelId, $userId, $content);
+        $result['message_id'] = $messageId;
+    }
+
     echo json_encode($result);
 } else {
     http_response_code(400);
