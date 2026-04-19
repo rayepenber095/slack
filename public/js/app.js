@@ -20,6 +20,16 @@ const channelList     = document.getElementById('channel-list');
 const chatHeader      = document.getElementById('chat-header');
 const chatHeaderTitle = document.getElementById('chat-header-title');
 
+/** Escape a string so it is safe to insert into an HTML attribute or text node. */
+function escHtml(str) {
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
 // ── Channel creation modal ──────────────────────────────────────────────────
 
 document.getElementById('create-channel-btn')?.addEventListener('click', () => {
@@ -113,19 +123,21 @@ function setActiveChannel(channelId, channelName) {
  * an HTML snippet. Images are rendered inline; other files get a download link.
  */
 function renderFileToken(token) {
-    // format: [file:<id>:<path>:<name>]
-    const match = token.match(/^\[file:(\d+):([^:]+):(.+)\]$/);
+    // format: [file:<id>:<path>:<name>]  (name may contain any characters)
+    const match = token.match(/^\[file:(\d+):([^[\]:]+):(.+)\]$/);
     if (!match) return null;
     const [, , filePath, fileName] = match;
     const ext = fileName.split('.').pop().toLowerCase();
     const imageExts = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
+    const safeHref  = escHtml(filePath);
+    const safeName  = escHtml(fileName);
     if (imageExts.includes(ext)) {
         return `<span class="message-file-attachment">
-            <a href="${filePath}" target="_blank">${fileName}</a>
-            <img src="${filePath}" alt="${fileName}" loading="lazy">
+            <a href="${safeHref}" target="_blank">${safeName}</a>
+            <img src="${safeHref}" alt="${safeName}" loading="lazy">
         </span>`;
     }
-    return `<span class="message-file-attachment">📎 <a href="${filePath}" target="_blank">${fileName}</a></span>`;
+    return `<span class="message-file-attachment">📎 <a href="${safeHref}" target="_blank">${safeName}</a></span>`;
 }
 
 // VULN: Stored XSS - message content rendered via innerHTML without sanitization
@@ -261,9 +273,9 @@ async function performSearch() {
             const item = document.createElement('div');
             item.className = 'search-result-item';
             item.innerHTML = `
-                <span class="username">${msg.username}</span>
+                <span class="username">${escHtml(msg.username)}</span>
                 <span class="timestamp">${new Date(msg.timestamp).toLocaleTimeString()}</span>
-                <div class="text">${msg.message_content}</div>
+                <div class="text">${escHtml(msg.message_content)}</div>
             `;
             resultsDiv.appendChild(item);
         });

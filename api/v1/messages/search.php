@@ -19,4 +19,4 @@ if (empty($query) || empty($channelId)) {
 
 $messages = searchMessages($query, $channelId);
 
-echo json_encode(['success' => true, 'messages' => $messages, 'query' => $query]);
+echo json_encode(['success' => true, 'messages' => $messages]);
