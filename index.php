@@ -1,4 +1,14 @@
 <?php
+// When using PHP's built-in server (php -S), route real files directly
+// so that API endpoints and static assets are served without going through
+// the router switch below.
+if (php_sapi_name() === 'cli-server') {
+    $requestedFile = __DIR__ . parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+    if (is_file($requestedFile)) {
+        return false;
+    }
+}
+
 require_once __DIR__ . '/config/config.php';
 require_once __DIR__ . '/config/database.php';
 require_once __DIR__ . '/includes/session.php';
