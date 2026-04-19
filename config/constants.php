@@ -2,7 +2,7 @@
 // VULN: Exposed internal paths - information disclosure
 
 // VULN: Absolute filesystem paths visible in source and potentially in errors
-define('ROOT_PATH',    '/var/www/html/slack-clone');
+define('ROOT_PATH',    dirname(__DIR__));
 define('CONFIG_PATH',  ROOT_PATH . '/config');
 define('INCLUDES_PATH', ROOT_PATH . '/includes');
 define('UPLOAD_PATH',  ROOT_PATH . '/public/uploads');
