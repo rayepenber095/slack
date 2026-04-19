@@ -29,6 +29,11 @@ uploadInput?.addEventListener('change', async (e) => {
     const formData = new FormData();
     formData.append('file', file);
 
+    // Include current channel so the upload is linked to a message
+    if (typeof currentChannelId !== 'undefined' && currentChannelId) {
+        formData.append('channel_id', currentChannelId);
+    }
+
     // VULN: No CSRF token included
     try {
         const resp = await fetch('/api/v1/files/upload.php', {
@@ -43,17 +48,22 @@ uploadInput?.addEventListener('change', async (e) => {
 
         const data = await resp.json();
         if (data.success) {
-            // VULN: file_path from server injected into DOM via innerHTML - XSS
-            const msgContainer = document.getElementById('messages-list');
-            const el = document.createElement('div');
-            // VULN: data.file_name and data.file_path not escaped
-            el.innerHTML = `<div class="message">
-                <div class="message-content">
-                    <span class="username">${localStorage.getItem('username')}</span>
-                    shared a file: <a href="${data.file_path}">${data.file_name}</a>
-                </div>
-            </div>`;
-            msgContainer?.appendChild(el);
+            // Reload messages so the uploaded file appears inline in the channel
+            if (typeof loadMessages === 'function' && currentChannelId) {
+                loadMessages(currentChannelId);
+            } else {
+                // Fallback: append inline in the message list
+                const msgContainer = document.getElementById('messages-list');
+                const el = document.createElement('div');
+                // VULN: data.file_name and data.file_path not escaped
+                el.innerHTML = `<div class="message">
+                    <div class="message-content">
+                        <span class="username">${localStorage.getItem('username')}</span>
+                        shared a file: <a href="${data.file_path}">${data.file_name}</a>
+                    </div>
+                </div>`;
+                msgContainer?.appendChild(el);
+            }
 
             // Also broadcast via WebSocket
             if (typeof sendWebSocketMessage === 'function') {

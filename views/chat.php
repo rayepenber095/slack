@@ -16,14 +16,52 @@
         <!-- VULN: Username reflected directly - XSS if username contains HTML -->
         <span><?php echo $_SESSION['username']; ?></span>
     </div>
+    <div class="sidebar-section-header">
+        <span>Channels</span>
+        <button id="create-channel-btn" class="add-channel-btn" title="Create channel">+</button>
+    </div>
     <div id="channel-list" class="channel-list"></div>
     <div style="padding:12px 20px;border-top:1px solid #333;">
         <button onclick="window.location='/logout'" style="background:transparent;border:none;color:#717274;cursor:pointer;">Sign out</button>
     </div>
 </div>
 
+<!-- Create Channel Modal -->
+<div id="create-channel-modal" class="modal-overlay" style="display:none;">
+    <div class="modal">
+        <div class="modal-header">
+            <span class="modal-title">Create a channel</span>
+            <button class="modal-close" onclick="closeCreateChannelModal()">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="new-channel-name">Channel name</label>
+                <input type="text" id="new-channel-name" placeholder="e.g. announcements" autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label for="new-channel-desc">Description <span style="color:#717274;font-weight:normal;">(optional)</span></label>
+                <input type="text" id="new-channel-desc" placeholder="What is this channel about?">
+            </div>
+            <div id="create-channel-error" class="error-message" style="display:none;"></div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeCreateChannelModal()">Cancel</button>
+            <button class="btn-primary modal-submit-btn" onclick="createChannel()">Create</button>
+        </div>
+    </div>
+</div>
+
 <div class="main">
-    <div id="chat-header" class="chat-header">Select a channel</div>
+    <div id="chat-header" class="chat-header">
+        <span id="chat-header-title">Select a channel</span>
+        <div id="search-bar" class="search-bar" style="display:none;">
+            <input type="text" id="search-input" class="search-input" placeholder="Search messages…">
+            <button class="search-btn" onclick="performSearch()">🔍</button>
+            <button class="search-close-btn" onclick="closeSearch()">✕</button>
+        </div>
+        <button id="search-toggle-btn" class="search-toggle-btn" style="display:none;" onclick="toggleSearch()" title="Search messages">🔍</button>
+    </div>
+    <div id="search-results" class="search-results" style="display:none;"></div>
     <div id="messages-list" class="messages-container"></div>
     <div class="input-area">
         <div class="message-input-wrapper">
