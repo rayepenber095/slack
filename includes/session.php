@@ -1,4 +1,64 @@
 <?php
+/**
+ * FILE: includes/session.php
+ * =============================================================================
+ * VULNERABILITY SUMMARY
+ * =============================================================================
+ *
+ * [1] SESSION FIXATION
+ *     Type    : Authentication Failure (OWASP A07)
+ *     CWE     : CWE-384 – Session Fixation
+ *     Detail  : initSession() reads PHPSESSID directly from $_GET and passes it
+ *               to session_id() before calling session_start().  An attacker
+ *               can pre-set a known session ID via a crafted link
+ *               (e.g. /login?PHPSESSID=attacker123), wait for the victim to log
+ *               in, and immediately reuse that known ID to hijack the
+ *               authenticated session.  setUserSession() never calls
+ *               session_regenerate_id(true) to issue a fresh, unguessable ID
+ *               after authentication.
+ *
+ * [2] MISSING HttpOnly FLAG ON SESSION COOKIE
+ *     Type    : XSS Escalation / Authentication Failure (OWASP A07)
+ *     CWE     : CWE-1004 – Sensitive Cookie Without HttpOnly Flag
+ *     Detail  : httponly is set to false in both session_set_cookie_params() and
+ *               the setcookie() call inside setUserSession().  JavaScript running
+ *               in the page (e.g. via stored XSS) can read document.cookie and
+ *               steal the session token, fully compromising the victim's account.
+ *
+ * [3] MISSING Secure FLAG ON SESSION COOKIE
+ *     Type    : Cryptographic Failure (OWASP A02)
+ *     CWE     : CWE-614 – Sensitive Cookie in HTTPS Session Without Secure Attribute
+ *     Detail  : secure is set to false, meaning the browser will send the session
+ *               cookie over plain HTTP connections.  A network attacker (e.g. on
+ *               the same Wi-Fi) performing a downgrade or man-in-the-middle
+ *               attack can intercept the token in cleartext.
+ *
+ * [4] WEAK SameSite POLICY
+ *     Type    : Cross-Site Request Forgery (OWASP A01/A07)
+ *     CWE     : CWE-352 – Cross-Site Request Forgery (CSRF)
+ *     Detail  : samesite is set to 'None', which is the most permissive setting.
+ *               Cookies are sent on all cross-site requests, enabling CSRF
+ *               attacks from any malicious third-party page.
+ *
+ * [5] WEAK SESSION ID ENTROPY
+ *     Type    : Authentication Failure (OWASP A07)
+ *     CWE     : CWE-331 – Insufficient Entropy
+ *     Detail  : session.entropy_length is reduced to 16 bytes and
+ *               session.hash_function is set to md5 (128-bit output), resulting
+ *               in weaker, shorter session IDs that are easier to brute-force
+ *               compared to PHP defaults.
+ *
+ * [6] INCOMPLETE SESSION DESTRUCTION
+ *     Type    : Authentication Failure (OWASP A07)
+ *     CWE     : CWE-613 – Insufficient Session Expiration
+ *     Detail  : destroySession() does not call session_regenerate_id(true) prior
+ *               to destruction, leaving the old session ID potentially reusable
+ *               (race condition).  The session_token cookie is set to expire in
+ *               the past but without an explicit path/domain match, browsers may
+ *               not delete it consistently.  The token is never revoked in the
+ *               database, so replaying it after logout still authenticates.
+ * =============================================================================
+ */
 require_once __DIR__ . '/../config/config.php';
 
 // VULN: Session fixation - session ID not regenerated after login

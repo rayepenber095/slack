@@ -1,4 +1,36 @@
 <?php
+/**
+ * FILE: api/v1/users/profile.php
+ * =============================================================================
+ * VULNERABILITY SUMMARY
+ * =============================================================================
+ *
+ * [1] IDOR – ANY USER CAN VIEW ANY PROFILE (GET)
+ *     Type    : Broken Access Control (OWASP A01)
+ *     CWE     : CWE-639 – Authorization Bypass Through User-Controlled Key
+ *     Detail  : The GET handler reads $userId from $_GET['user_id'] with no
+ *               check that it matches $_SESSION['user_id'].  By iterating
+ *               user_id values (1, 2, 3...) an attacker can enumerate the
+ *               email address, role, and login history of every user account.
+ *
+ * [2] IDOR + PRIVILEGE ESCALATION – ANY USER CAN UPDATE ANY PROFILE (POST)
+ *     Type    : Broken Access Control (OWASP A01)
+ *     CWE     : CWE-639 / CWE-269 – Privilege Management
+ *     Detail  : The POST handler reads $userId from the request body with no
+ *               session ownership check.  Any authenticated user can modify any
+ *               other user's account.  Because updateUserProfile() allows the
+ *               'role' field (see user_handler.php VULN [2]), an attacker can
+ *               set role=admin on their own account or reset another user's
+ *               email address to lock them out.
+ *
+ * [3] SQL INJECTION VIA getUserProfile() / updateUserProfile()
+ *     Type    : Injection (OWASP A03)
+ *     CWE     : CWE-89
+ *     Detail  : Both the GET and POST code paths call functions that interpolate
+ *               the unsanitized $userId and field values into raw SQL queries
+ *               (see user_handler.php).
+ * =============================================================================
+ */
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 
