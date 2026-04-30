@@ -1,4 +1,57 @@
 <?php
+/**
+ * FILE: includes/user_handler.php
+ * =============================================================================
+ * VULNERABILITY SUMMARY
+ * =============================================================================
+ *
+ * [1] IDOR + SQL INJECTION IN getUserProfile()
+ *     Type    : Broken Access Control + Injection (OWASP A01/A03)
+ *     CWE     : CWE-639 / CWE-89
+ *     Detail  : getUserProfile() accepts a caller-supplied $userId and executes
+ *               it in a raw SQL string.  No check is performed to verify the
+ *               requesting user owns or is authorized to view that profile.
+ *               Any authenticated user can enumerate and read all user records,
+ *               including email addresses and last-login timestamps.
+ *
+ * [2] IDOR + PRIVILEGE ESCALATION + SQL INJECTION IN updateUserProfile()
+ *     Type    : Broken Access Control + Injection (OWASP A01/A03)
+ *     CWE     : CWE-639 / CWE-269 / CWE-89
+ *     Detail  : The function accepts any $userId without checking it matches
+ *               the session user, so any authenticated user can overwrite any
+ *               other account's details.  The 'role' field is included in
+ *               $allowedFields, enabling privilege escalation: a regular user
+ *               can promote themselves to 'admin' by passing role=admin in the
+ *               request body.  All field values are interpolated into SQL,
+ *               enabling second-order SQL injection via the UPDATE statement.
+ *
+ * [3] SQL INJECTION + REFLECTED XSS IN searchUsers()
+ *     Type    : Injection – SQLi + XSS (OWASP A03)
+ *     CWE     : CWE-89 / CWE-79
+ *     Detail  : $searchTerm is interpolated into a LIKE pattern inside the SQL
+ *               query without escaping.  A value of  %' UNION SELECT 1,version()
+ *               ,3,4-- extracts the DB version.  The search term is also
+ *               reflected in the JSON response (query field) without
+ *               HTML-encoding, causing reflected XSS in any client that renders
+ *               the response as HTML.
+ *
+ * [4] UNAUTHORIZED PRIVILEGE ESCALATION IN promoteUser()
+ *     Type    : Broken Access Control (OWASP A01)
+ *     CWE     : CWE-269 – Improper Privilege Management
+ *     Detail  : promoteUser() accepts any $userId and $newRole and performs the
+ *               UPDATE with no check that the caller holds an admin role.  Any
+ *               authenticated user can call this function (e.g. via a crafted
+ *               HTTP request) to grant themselves or anyone else administrator
+ *               privileges.
+ *
+ * [5] IDOR – UNAUTHORIZED ACCOUNT DELETION IN deleteUser()
+ *     Type    : Broken Access Control (OWASP A01)
+ *     CWE     : CWE-639
+ *     Detail  : deleteUser() deletes the account matching $userId with no
+ *               ownership or role check, allowing any authenticated user to
+ *               delete any account, including administrator accounts.
+ * =============================================================================
+ */
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../includes/logger.php';
 
