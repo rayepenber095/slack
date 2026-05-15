@@ -7,7 +7,7 @@ A deliberately vulnerable Slack-like messaging application built with PHP, MySQL
 ## Project Structure
 
 ```
-/home/runner/work/slack/slack/
+project-root/
 ├── api/                    # REST and internal endpoints
 ├── config/                 # DB/app constants and runtime settings
 ├── includes/               # Core handlers (auth, channels, messages, users, files)
@@ -23,7 +23,7 @@ A deliberately vulnerable Slack-like messaging application built with PHP, MySQL
 ## Quick Start (Docker)
 
 ```bash
-cd /home/runner/work/slack/slack/docker
+cd docker
 docker-compose up --build
 ```
 
@@ -40,13 +40,13 @@ docker-compose up --build
 
 ## Quick Start (Local PHP)
 
-From repository root `/home/runner/work/slack/slack`:
+From repository root:
 
 ```bash
 composer install
-mysql -u root -p < /home/runner/work/slack/slack/sql/schema.sql
-php /home/runner/work/slack/slack/websocket/server.php
-php -S localhost:8000 /home/runner/work/slack/slack/index.php
+mysql -u root -p < sql/schema.sql
+php websocket/server.php
+php -S localhost:8000 index.php
 ```
 
 Open `http://localhost:8000`.
@@ -63,12 +63,12 @@ This gives enough sample data for chat browsing, searching, and security testing
 
 ## Documentation Added
 
-- **Functionality map:** `/home/runner/work/slack/slack/function.md`
+- **Functionality map:** `function.md`
 - **Vulnerability file guides:**
-  - `/home/runner/work/slack/slack/vulnerabilities/01-broken-access-control.md`
-  - `/home/runner/work/slack/slack/vulnerabilities/02-injection.md`
-  - `/home/runner/work/slack/slack/vulnerabilities/03-crypto-auth-session.md`
-  - `/home/runner/work/slack/slack/vulnerabilities/04-misconfiguration-and-files.md`
+  - `vulnerabilities/01-broken-access-control.md`
+  - `vulnerabilities/02-injection.md`
+  - `vulnerabilities/03-crypto-auth-session.md`
+  - `vulnerabilities/04-misconfiguration-and-files.md`
 
 ## Validation / Checks
 

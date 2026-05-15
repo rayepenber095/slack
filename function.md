@@ -63,4 +63,4 @@
 - `messages`
 - `files`
 
-See `/home/runner/work/slack/slack/sql/schema.sql` for full structure and seeded sample records.
+See `sql/schema.sql` for full structure and seeded sample records.
