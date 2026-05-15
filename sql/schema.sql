@@ -194,7 +194,7 @@ SELECT
     DATE_SUB(NOW(), INTERVAL MOD(seq.n, 360) MINUTE) AS timestamp,
     0 AS is_deleted
 FROM (
-    -- Generates 120 messages so each channel has enough sample chat/search content.
+    -- Generates 120 messages distributed across 8 channels via MOD-based routing.
     SELECT (ones.n + tens.n * 10 + 1) AS n
     FROM (
         SELECT 0 AS n UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4

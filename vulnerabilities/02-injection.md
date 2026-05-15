@@ -9,7 +9,7 @@
 - `api/internal/admin.php` (command injection and arbitrary SQL)
 
 ## How to test
-1. **SQLi**: use crafted payloads or `sqlmap` against login/search/message routes.
+1. **SQL injection**: use crafted payloads or `sqlmap` against login/search/message routes.
 2. **Stored XSS**: post message content with script payload and reload chat.
 3. **Reflected XSS**: pass HTML/JS payloads in search query parameters.
 4. **Command injection**: call admin endpoint `action=exec&cmd=id` with default basic auth.
