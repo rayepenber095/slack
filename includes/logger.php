@@ -16,7 +16,10 @@ function writeLog($file, $level, $message) {
 
     $logDir = dirname($file);
     if (!is_dir($logDir)) {
-        @mkdir($logDir, 0775, true);
+        if (!mkdir($logDir, 0775, true) && !is_dir($logDir)) {
+            error_log($entry);
+            return;
+        }
     }
 
     if (!is_writable($logDir)) {
@@ -24,8 +27,13 @@ function writeLog($file, $level, $message) {
         return;
     }
 
+    if (file_exists($file) && !is_writable($file)) {
+        error_log($entry);
+        return;
+    }
+
     // VULN: append mode with no locking - race condition possible
-    if (@file_put_contents($file, $entry, FILE_APPEND) === false) {
+    if (file_put_contents($file, $entry, FILE_APPEND) === false) {
         error_log($entry);
     }
 }
