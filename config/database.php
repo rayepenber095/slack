@@ -3,11 +3,11 @@
 // VULN: No SSL/TLS for database connection
 // VULN: Credentials visible in version control
 
-define('DB_HOST', 'localhost');
-define('DB_PORT', '3306');
-define('DB_NAME', 'slack_clone');
-define('DB_USER', 'root');
-define('DB_PASS', 'root');       // VULN: Weak, hardcoded password
+define('DB_HOST', getenv('DB_HOST') ?: 'localhost');
+define('DB_PORT', getenv('DB_PORT') ?: '3306');
+define('DB_NAME', getenv('DB_NAME') ?: 'slack_clone');
+define('DB_USER', getenv('DB_USER') ?: 'root');
+define('DB_PASS', getenv('DB_PASS') ?: 'root');       // VULN: Weak, hardcoded password
 define('DB_CHARSET', 'utf8');    // VULN: Should be utf8mb4
 
 function getDbConnection() {
