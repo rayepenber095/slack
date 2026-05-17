@@ -21,6 +21,7 @@ services:
     environment:
       # VULN: Credentials in docker-compose.yml (often committed to git)
       DB_HOST: db
+      DB_PORT: 3306
       DB_USER: root
       DB_PASS: root        # VULN: Weak password in environment variable
       DB_NAME: slack_clone
@@ -29,7 +30,8 @@ services:
       # VULN: Debug mode in production
       PHP_DISPLAY_ERRORS: "1"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - slack-net
 
@@ -47,6 +49,12 @@ services:
     volumes:
       - db-data:/var/lib/mysql
       - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ../sql/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
     networks:
       - slack-net
 
