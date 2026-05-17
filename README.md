@@ -80,7 +80,7 @@ docker-compose exec db sh -lc 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql -uroot -e 
 - **Nginx 403**: usually wrong web root or missing nginx site config. This repo uses `/var/www/html` with `index.php` routing.
 - **`GET /index.php 404`**: usually FastCGI `SCRIPT_FILENAME` mismatch. Verify with `docker-compose exec app nginx -t`.
 - **DB not opening**: reset volumes with `docker-compose down -v` so init scripts run again, then confirm with `SHOW TABLES`.
-- **Containers start but app still fails**: check `docker-compose logs -f app db` and verify `db` health is `healthy` in `docker-compose ps`.
+- **Containers start but app still fails**: check `docker-compose logs -f app db` and verify `db` health is `healthy` in `docker-compose ps`. If it is `starting`, wait a bit; if it is `unhealthy`, run `docker-compose logs db` and recreate with `docker-compose down -v && docker-compose up --build`.
 
 ### Default credentials
 - Admin UI/API basic auth: `admin / admin`
