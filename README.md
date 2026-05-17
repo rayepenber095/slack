@@ -69,10 +69,10 @@ docker-compose exec app ps aux | grep nginx
 docker-compose exec app ls -la /var/www/html
 
 # Check DB connectivity from app container
-docker-compose exec app php -r "new PDO('mysql:host=db;port=3306;dbname=slack_clone','root','root'); echo 'db-ok'.PHP_EOL;"
+docker-compose exec app sh -lc 'php -r "new PDO(\"mysql:host=${DB_HOST:-db};port=${DB_PORT:-3306};dbname=${DB_NAME:-slack_clone}\",\"${DB_USER:-root}\",\"${DB_PASS:-root}\"); echo \"db-ok\n\";"'
 
 # Check tables in DB container
-docker-compose exec db mysql -uroot -proot -e "USE slack_clone; SHOW TABLES;"
+docker-compose exec db sh -lc 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql -uroot -e "USE slack_clone; SHOW TABLES;"'
 ```
 
 ### Common Docker Issues
