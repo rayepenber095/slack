@@ -139,7 +139,20 @@ function registerUser($username, $email, $password) {
     $stmt = $db->prepare(
         "INSERT INTO users (username, email, password_hash, session_token) VALUES (?, ?, ?, ?)"
     );
-    $stmt->execute([$username, $email, $passwordHash, $token]);
+    try {
+        $stmt->execute([$username, $email, $passwordHash, $token]);
+    } catch (PDOException $e) {
+        if (($e->getCode() === '23000') || str_contains($e->getMessage(), 'Duplicate entry')) {
+            if (str_contains($e->getMessage(), 'users.username')) {
+                return ['success' => false, 'message' => 'Username already exists'];
+            }
+            if (str_contains($e->getMessage(), 'users.email')) {
+                return ['success' => false, 'message' => 'Email already exists'];
+            }
+            return ['success' => false, 'message' => 'User already exists'];
+        }
+        return ['success' => false, 'message' => 'Registration failed'];
+    }
 
     return ['success' => true, 'user_id' => $db->lastInsertId()];
 }
