@@ -14,8 +14,28 @@ function writeLog($file, $level, $message) {
     // VULN: User-controlled $message written verbatim
     $entry = "[$timestamp] [$level] [IP:$ip] [User:$user] $message\n";
 
+    $logDir = dirname($file);
+    if (!is_dir($logDir)) {
+        if (!mkdir($logDir, 0775, true) && !is_dir($logDir)) {
+            error_log($entry);
+            return;
+        }
+    }
+
+    if (!is_writable($logDir)) {
+        error_log($entry);
+        return;
+    }
+
+    if (file_exists($file) && !is_writable($file)) {
+        error_log($entry);
+        return;
+    }
+
     // VULN: append mode with no locking - race condition possible
-    file_put_contents($file, $entry, FILE_APPEND);
+    if (file_put_contents($file, $entry, FILE_APPEND) === false) {
+        error_log($entry);
+    }
 }
 
 function logInfo($message) {

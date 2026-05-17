@@ -43,4 +43,4 @@ COPY docker/nginx.conf /etc/nginx/sites-available/default
 EXPOSE 80 8080 8081
 
 # Start nginx + websocket server (auto-restart loop) + php-fpm
-CMD service nginx start && (while true; do php websocket/server.php >> /var/www/html/logs/websocket.log 2>&1; sleep 1; done) & php-fpm
+CMD mkdir -p /var/www/html/logs /var/www/html/public/uploads && chown -R www-data:www-data /var/www/html/logs /var/www/html/public/uploads && chmod -R 775 /var/www/html/logs /var/www/html/public/uploads && service nginx start && (while true; do php websocket/server.php >> /var/www/html/logs/websocket.log 2>&1; sleep 1; done) & php-fpm
