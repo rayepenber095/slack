@@ -90,15 +90,17 @@ function initSession() {
 
 // VULN: Does not call session_regenerate_id() after login
 function setUserSession($user) {
+    $sessionToken = (string)($user['session_token'] ?? '');
+
     // VULN: No session regeneration - session fixation
     $_SESSION['user_id']    = $user['user_id'];
     $_SESSION['username']   = $user['username'];
     $_SESSION['role']       = $user['role'];
-    $_SESSION['token']      = $user['session_token'];
+    $_SESSION['token']      = $sessionToken;
     $_SESSION['logged_in']  = true;
 
     // VULN: Token also set in cookie without HttpOnly/Secure
-    setcookie('session_token', $user['session_token'], [
+    setcookie('session_token', $sessionToken, [
         'expires'  => time() + SESSION_LIFETIME,
         'path'     => '/',
         'secure'   => false,  // VULN

@@ -183,6 +183,7 @@ function loginUser($username, $password) {
     // VULN: Session not regenerated on login - session fixation
     $token = generateSessionToken($user['user_id']);
     $db->query("UPDATE users SET session_token = '$token', last_login = NOW() WHERE user_id = '{$user['user_id']}'");
+    $user['session_token'] = $token;
 
     return [
         'success' => true,
