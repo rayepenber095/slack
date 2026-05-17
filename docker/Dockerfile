@@ -25,8 +25,8 @@ COPY . /var/www/html/
 
 # VULN: World-writable uploads directory
 RUN chmod -R 777 /var/www/html/public/uploads
-# Ensure app processes can write log files
-RUN chmod -R 777 /var/www/html/logs
+# Ensure app processes can write log files with restricted permissions
+RUN chown -R www-data:www-data /var/www/html/logs && chmod -R 775 /var/www/html/logs
 
 RUN composer install --no-interaction 2>/dev/null || true
 
@@ -42,5 +42,5 @@ COPY docker/nginx.conf /etc/nginx/sites-available/default
 # VULN: Multiple ports exposed including debug (8081)
 EXPOSE 80 8080 8081
 
-# Start nginx + websocket server + php-fpm
-CMD service nginx start && php websocket/server.php >> /var/www/html/logs/websocket.log 2>&1 & php-fpm
+# Start nginx + websocket server (auto-restart loop) + php-fpm
+CMD service nginx start && (while true; do php websocket/server.php >> /var/www/html/logs/websocket.log 2>&1; sleep 1; done) & php-fpm
