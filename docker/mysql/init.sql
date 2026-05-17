@@ -15,9 +15,9 @@ SOURCE /docker-entrypoint-initdb.d/schema.sql;
 
 -- VULN: Enable general query log (logs all queries including data)
 SET GLOBAL general_log = 'ON';
-SET GLOBAL general_log_file = '/var/log/mysql/mysql-general.log';
+SET GLOBAL general_log_file = '/var/lib/mysql/mysql-general.log';
 
 -- VULN: Enable slow query log with very low threshold
 SET GLOBAL slow_query_log = 'ON';
 SET GLOBAL long_query_time = 0;
-SET GLOBAL slow_query_log_file = '/var/log/mysql/mysql-slow.log';
+SET GLOBAL slow_query_log_file = '/var/lib/mysql/mysql-slow.log';
